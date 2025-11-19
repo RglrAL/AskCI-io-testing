@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AskCI Testing Analysis - Information Officers Feedback</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,44 +41,21 @@
             font-size: 1rem;
         }
 
-        .nav-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
+        /* Performance Dashboard */
+        .dashboard {
             background: white;
-            border: 2px solid #e5e7eb;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            color: #6b7280;
-            transition: all 0.2s;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .tab-btn:hover {
-            border-color: #10b981;
-            color: #10b981;
+        .dashboard h2 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 20px;
         }
 
-        .tab-btn.active {
-            background: #10b981;
-            color: white;
-            border-color: #10b981;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -88,11 +64,27 @@
         }
         
         .stat-card {
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             text-align: center;
+            color: white;
+        }
+
+        .stat-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .stat-card.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
         
         .stat-value {
@@ -101,181 +93,54 @@
             margin-bottom: 8px;
         }
         
-        .stat-value.green { color: #10b981; }
-        .stat-value.yellow { color: #f59e0b; }
-        .stat-value.red { color: #ef4444; }
-        .stat-value.blue { color: #3b82f6; }
-        
         .stat-label {
             font-size: 0.875rem;
-            color: #6b7280;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            opacity: 0.9;
         }
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            color: #111827;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card h3 {
-            font-size: 1.25rem;
-            color: #374151;
-            margin: 20px 0 12px 0;
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
         }
 
         .chart-container {
             position: relative;
-            height: 400px;
-            margin-top: 16px;
+            height: 300px;
         }
 
-        .issue-grid {
-            display: grid;
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .issue-card {
-            background: #f9fafb;
-            border-left: 4px solid #ef4444;
-            padding: 16px;
-            border-radius: 8px;
-        }
-
-        .issue-card.warning {
-            border-left-color: #f59e0b;
-        }
-
-        .issue-card.info {
-            border-left-color: #3b82f6;
-        }
-
-        .issue-card.success {
-            border-left-color: #10b981;
-        }
-
-        .issue-title {
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .issue-description {
-            color: #6b7280;
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
-
-        .recommendation {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin: 8px 0;
-        }
-
-        .recommendation strong {
-            color: #1e40af;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 8px;
-        }
-
-        .badge-red { background: #fee2e2; color: #991b1b; }
-        .badge-yellow { background: #fef3c7; color: #92400e; }
-        .badge-green { background: #d1fae5; color: #065f46; }
-        .badge-blue { background: #dbeafe; color: #1e40af; }
-
-        .question-list {
-            margin-top: 16px;
-        }
-
-        .question-item {
+        /* Filters */
+        .filters {
             background: white;
-            border: 1px solid #e5e7eb;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .question-text {
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 8px;
-        }
-
-        .question-meta {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .question-feedback {
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            color: #374151;
-            margin-top: 8px;
-            font-style: italic;
-        }
-
-        .rag-section {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
             border-radius: 12px;
             padding: 20px;
-            margin: 24px 0;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .rag-section h3 {
-            color: #92400e;
-            margin-top: 0;
+        .filters h3 {
+            font-size: 1.25rem;
+            color: #111827;
+            margin-bottom: 16px;
         }
 
-        .action-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .action-list li {
-            padding: 12px;
-            margin: 8px 0;
-            background: white;
-            border-radius: 6px;
-            border-left: 3px solid #10b981;
-        }
-
-        .action-list li strong {
-            color: #065f46;
-        }
-
-        .filters {
+        .filter-group {
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 16px;
-            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #374151;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
         }
 
         .filter-btn {
@@ -284,12 +149,15 @@
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
             transition: all 0.2s;
         }
 
         .filter-btn:hover {
             border-color: #10b981;
+            color: #10b981;
         }
 
         .filter-btn.active {
@@ -298,420 +166,671 @@
             border-color: #10b981;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        th {
-            background: #f9fafb;
-            font-weight: 600;
+        select.filter-select {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
             color: #374151;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            background: white;
+            cursor: pointer;
         }
 
-        td {
+        /* Question Cards */
+        .questions-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .section-header:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-count {
+            background: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
             color: #6b7280;
-            font-size: 0.875rem;
         }
 
-        .progress-bar {
-            background: #e5e7eb;
-            border-radius: 4px;
-            height: 8px;
-            overflow: hidden;
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .question-list {
+            display: none;
+        }
+
+        .question-list.expanded {
+            display: block;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #e5e7eb;
+        }
+
+        .question-card.completely-correct {
+            border-left-color: #10b981;
+        }
+
+        .question-card.mostly-correct {
+            border-left-color: #3b82f6;
+        }
+
+        .question-card.partially-correct {
+            border-left-color: #f59e0b;
+        }
+
+        .question-card.mostly-incorrect {
+            border-left-color: #f97316;
+        }
+
+        .question-card.completely-incorrect {
+            border-left-color: #ef4444;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .question-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-orange {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-gray {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .question-feedback {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 0.875rem;
+            color: #374151;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .office-location {
+            font-size: 0.875rem;
+            color: #6b7280;
             margin-top: 8px;
         }
 
-        .progress-fill {
-            height: 100%;
-            transition: width 0.3s;
+        /* Success vs Failure Comparison */
+        .comparison-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .progress-fill.green { background: #10b981; }
-        .progress-fill.yellow { background: #f59e0b; }
-        .progress-fill.red { background: #ef4444; }
+        .comparison-section h2 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 20px;
+        }
 
-        .hidden { display: none; }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
 
-        @media print {
-            body { background: white; }
-            .nav-tabs, .filters { display: none; }
-            .card { box-shadow: none; border: 1px solid #e5e7eb; }
+        .comparison-card {
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .comparison-card.success {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+        }
+
+        .comparison-card.failure {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+        }
+
+        .comparison-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-card.success h3 {
+            color: #065f46;
+        }
+
+        .comparison-card.failure h3 {
+            color: #991b1b;
+        }
+
+        .comparison-list {
+            list-style: none;
+        }
+
+        .comparison-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.875rem;
+        }
+
+        .comparison-list li:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-card.success .comparison-list li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .comparison-card.failure .comparison-list li::before {
+            content: "✗ ";
+            color: #ef4444;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Overall Feedback */
+        .feedback-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .feedback-section h2 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+
+        .feedback-card {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #10b981;
+        }
+
+        .feedback-office {
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-text {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .chart-row,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 AskCI Chatbot Testing Analysis</h1>
-            <p>Citizens Information Officers Field Testing Results</p>
+            <h1>🤖 AskCI Testing Analysis</h1>
+            <p>Information Officers Feedback - Field Testing Results</p>
         </div>
 
-        <div id="loading" class="card" style="text-align: center;">
-            <h2>📊 Loading Data...</h2>
-            <p style="color: #6b7280; margin-top: 12px;">Processing testing results from Information Offices</p>
-        </div>
-
-        <div id="dashboard" class="hidden">
-            <!-- Key Metrics -->
+        <!-- Overall Performance Dashboard -->
+        <div class="dashboard">
+            <h2>📊 Overall Performance Dashboard</h2>
+            
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value blue" id="totalQuestions">0</div>
-                    <div class="stat-label">Total Questions</div>
+                <div class="stat-card primary">
+                    <div class="stat-value" id="totalQuestions">0</div>
+                    <div class="stat-label">Total Questions Tested</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value green" id="totalOffices">0</div>
-                    <div class="stat-label">Participating Offices</div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="successRate">0%</div>
+                    <div class="stat-label">Completely Correct</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value green" id="accuracyRate">0%</div>
-                    <div class="stat-label">Accuracy Rate</div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="needsWorkRate">0%</div>
+                    <div class="stat-label">Needs Work</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value yellow" id="partialRate">0%</div>
-                    <div class="stat-label">Partial Accuracy</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value red" id="incorrectRate">0%</div>
-                    <div class="stat-label">Incorrect Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value green" id="helpfulRate">0%</div>
-                    <div class="stat-label">Helpful Rate</div>
+                <div class="stat-card danger">
+                    <div class="stat-value" id="failureRate">0%</div>
+                    <div class="stat-label">Failed Answers</div>
                 </div>
             </div>
 
-            <!-- Navigation Tabs -->
-            <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
-                <button class="tab-btn" onclick="switchTab('rag-insights')">🔧 RAG Pipeline Insights</button>
-                <button class="tab-btn" onclick="switchTab('problem-areas')">⚠️ Problem Areas</button>
-                <button class="tab-btn" onclick="switchTab('detailed-results')">📋 Detailed Results</button>
-                <button class="tab-btn" onclick="switchTab('recommendations')">💡 Recommendations</button>
-            </div>
-
-            <!-- Overview Tab -->
-            <div id="overview" class="tab-content active">
-                <div class="card">
-                    <h2>📈 Performance Summary</h2>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        <div class="chart-container">
-                            <canvas id="accuracyChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="helpfulnessChart"></canvas>
-                        </div>
+            <div class="chart-row">
+                <div>
+                    <h3 style="margin-bottom: 12px; color: #374151;">Accuracy Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="accuracyChart"></canvas>
                     </div>
                 </div>
-
-                <div class="card">
-                    <h2>🎯 Quick Insights</h2>
-                    <div id="quickInsights"></div>
-                </div>
-
-                <div class="card">
-                    <h2>🏢 Performance by Office</h2>
-                    <table id="officePerformanceTable">
-                        <thead>
-                            <tr>
-                                <th>Office Location</th>
-                                <th>Questions Tested</th>
-                                <th>Accuracy</th>
-                                <th>Helpfulness</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- RAG Pipeline Insights Tab -->
-            <div id="rag-insights" class="tab-content">
-                <div class="rag-section">
-                    <h3>🔧 RAG System Analysis & Optimization Opportunities</h3>
-                    <p style="margin-bottom: 16px;">Based on the testing feedback, here are specific areas of the RAG pipeline that need attention:</p>
-                </div>
-
-                <div class="card">
-                    <h2>1️⃣ Retrieval Issues</h2>
-                    <div id="retrievalIssues"></div>
-                </div>
-
-                <div class="card">
-                    <h2>2️⃣ Chunking & Context Issues</h2>
-                    <div id="chunkingIssues"></div>
-                </div>
-
-                <div class="card">
-                    <h2>3️⃣ Knowledge Base Gaps</h2>
-                    <div id="knowledgeGaps"></div>
-                </div>
-
-                <div class="card">
-                    <h2>4️⃣ Generation Quality Issues</h2>
-                    <div id="generationIssues"></div>
-                </div>
-
-                <div class="card">
-                    <h2>5️⃣ Edge Cases & Complex Queries</h2>
-                    <div id="edgeCases"></div>
-                </div>
-            </div>
-
-            <!-- Problem Areas Tab -->
-            <div id="problem-areas" class="tab-content">
-                <div class="card">
-                    <h2>⚠️ Critical Issues Requiring Immediate Attention</h2>
-                    <div id="criticalIssues"></div>
-                </div>
-
-                <div class="card">
-                    <h2>🔴 Questions That Failed</h2>
-                    <div class="filters">
-                        <button class="filter-btn active" onclick="filterFailed('all')">All Failed</button>
-                        <button class="filter-btn" onclick="filterFailed('incorrect')">Completely Incorrect</button>
-                        <button class="filter-btn" onclick="filterFailed('partial')">Partially Correct</button>
+                <div>
+                    <h3 style="margin-bottom: 12px; color: #374151;">Helpfulness Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="helpfulnessChart"></canvas>
                     </div>
-                    <div id="failedQuestions"></div>
-                </div>
-
-                <div class="card">
-                    <h2>🔶 Questions Needing Clarification</h2>
-                    <div id="clarificationQuestions"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Detailed Results Tab -->
-            <div id="detailed-results" class="tab-content">
-                <div class="card">
-                    <h2>📋 All Testing Results by Office</h2>
-                    <div id="detailedResultsContent"></div>
+        <!-- Success vs Failure Comparison -->
+        <div class="comparison-section">
+            <h2>⚖️ Success vs Failure Patterns</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card success">
+                    <h3>✓ What Works Well</h3>
+                    <ul class="comparison-list" id="successPatterns"></ul>
                 </div>
-
-                <div class="card">
-                    <h2>💬 Overall Feedback from Officers</h2>
-                    <div id="overallFeedback"></div>
-                </div>
-            </div>
-
-            <!-- Recommendations Tab -->
-            <div id="recommendations" class="tab-content">
-                <div class="card">
-                    <h2>💡 Immediate Action Items</h2>
-                    <div id="immediateActions"></div>
-                </div>
-
-                <div class="card">
-                    <h2>🔄 RAG Pipeline Tuning Recommendations</h2>
-                    <div id="ragTuning"></div>
-                </div>
-
-                <div class="card">
-                    <h2>📚 Content & Knowledge Base Improvements</h2>
-                    <div id="contentImprovements"></div>
-                </div>
-
-                <div class="card">
-                    <h2>🎯 Testing & Monitoring Strategy</h2>
-                    <div id="testingStrategy"></div>
+                <div class="comparison-card failure">
+                    <h3>✗ Common Failure Points</h3>
+                    <ul class="comparison-list" id="failurePatterns"></ul>
                 </div>
             </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <h3>🔍 Filter Questions</h3>
+            <div class="filter-group">
+                <span class="filter-label">Accuracy:</span>
+                <button class="filter-btn active" onclick="filterByAccuracy('all')">All</button>
+                <button class="filter-btn" onclick="filterByAccuracy('Completely correct')">Completely Correct</button>
+                <button class="filter-btn" onclick="filterByAccuracy('Mostly correct')">Mostly Correct</button>
+                <button class="filter-btn" onclick="filterByAccuracy('Partially correct')">Partially Correct</button>
+                <button class="filter-btn" onclick="filterByAccuracy('Mostly incorrect')">Mostly Incorrect</button>
+                <button class="filter-btn" onclick="filterByAccuracy('Completely incorrect')">Completely Incorrect</button>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Helpfulness:</span>
+                <button class="filter-btn active" onclick="filterByHelpfulness('all')">All</button>
+                <button class="filter-btn" onclick="filterByHelpfulness('Yes - clear and useful')">Clear & Useful</button>
+                <button class="filter-btn" onclick="filterByHelpfulness('Somewhat - needs clarification')">Needs Clarification</button>
+                <button class="filter-btn" onclick="filterByHelpfulness('No - too confusing or unhelpful')">Confusing/Unhelpful</button>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Office Location:</span>
+                <select class="filter-select" id="officeFilter" onchange="filterByOffice()">
+                    <option value="all">All Locations</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Questions Grouped by Outcome -->
+        <div class="questions-section">
+            <div class="section-header" onclick="toggleSection('completely-correct-section')">
+                <h3>
+                    <span class="section-icon">✅</span>
+                    Completely Correct Answers
+                    <span class="section-count" id="completely-correct-count">0</span>
+                </h3>
+                <span>▼</span>
+            </div>
+            <div id="completely-correct-section" class="question-list"></div>
+        </div>
+
+        <div class="questions-section">
+            <div class="section-header" onclick="toggleSection('mostly-correct-section')">
+                <h3>
+                    <span class="section-icon">✓</span>
+                    Mostly Correct Answers
+                    <span class="section-count" id="mostly-correct-count">0</span>
+                </h3>
+                <span>▼</span>
+            </div>
+            <div id="mostly-correct-section" class="question-list"></div>
+        </div>
+
+        <div class="questions-section">
+            <div class="section-header" onclick="toggleSection('partially-correct-section')">
+                <h3>
+                    <span class="section-icon">⚠️</span>
+                    Partially Correct Answers
+                    <span class="section-count" id="partially-correct-count">0</span>
+                </h3>
+                <span>▼</span>
+            </div>
+            <div id="partially-correct-section" class="question-list"></div>
+        </div>
+
+        <div class="questions-section">
+            <div class="section-header" onclick="toggleSection('mostly-incorrect-section')">
+                <h3>
+                    <span class="section-icon">⚠️</span>
+                    Mostly Incorrect Answers
+                    <span class="section-count" id="mostly-incorrect-count">0</span>
+                </h3>
+                <span>▼</span>
+            </div>
+            <div id="mostly-incorrect-section" class="question-list"></div>
+        </div>
+
+        <div class="questions-section">
+            <div class="section-header" onclick="toggleSection('completely-incorrect-section')">
+                <h3>
+                    <span class="section-icon">❌</span>
+                    Completely Incorrect Answers
+                    <span class="section-count" id="completely-incorrect-count">0</span>
+                </h3>
+                <span>▼</span>
+            </div>
+            <div id="completely-incorrect-section" class="question-list"></div>
+        </div>
+
+        <!-- Overall Feedback -->
+        <div class="feedback-section">
+            <h2>💬 Overall Feedback from Information Officers</h2>
+            <div id="overallFeedback"></div>
         </div>
     </div>
 
     <script>
-        let testData = [];
-        let charts = {};
+        // Raw CSV data
+        const csvData = `ID,Office Location,What question did you ask AskCI?,How accurate was the answer?,Would this answer help a citizen?,Optional - include any specific problems or suggestions to this response?,What question did you ask AskCI?2,How accurate was the answer?2,Would this answer help a citizen?2,Optional - include any specific problems or suggestions to this response?2,What question did you ask AskCI?3,How accurate was the answer?3,Would this answer help a citizen?3,Optional - include any specific problems or suggestions to this response?3,Please share your overall feedback on AskCI
+1,Thurles,What are the qualifying payments for living alone allowance,Completely correct,Yes - clear and useful,,How is savings for over 70 assessed in medical card applications ,Completely incorrect,No - too confusing or unhelpful,"The answer did not mention this important piece of information. 
+Savings and investments assessment
+Your savings and investments are also reviewed by the HSE in the means test for a medical card.
+Savings and investments of up to €36,000 for a single person, and up to €72,000 for a couple, are disregarded.
+Interest on savings or investments over the limit is taken into account in the means test.
+This means that only the interest or income earned on your savings and investments will be counted as income, not the total value of the savings or investments themselves. (VERY IMPORTANT INFO)
+www.citizensinformation.ie/en/health/medical-cards-and-gp-visit-cards/medical-card-means-test-over-70s/
 
-        // Auto-load the embedded CSV data
-        window.addEventListener('DOMContentLoaded', function() {
-            loadEmbeddedData();
-        });
-
-        function loadEmbeddedData() {
-            // Embedded CSV data
-            const csvData = `ID,Office Location,What question did you ask AskCI?,How accurate was the answer?,Would this answer help a citizen?,Optional - include any specific problems or suggestions to this response?,What question did you ask AskCI?2,How accurate was the answer?2,Would this answer help a citizen?2,Optional - include any specific problems or suggestions to this response?2,What question did you ask AskCI?3,How accurate was the answer?3,Would this answer help a citizen?3,Optional - include any specific problems or suggestions to this response?3,Please share your overall feedback on AskCI
-1,Thurles,What are the qualifying payments for living alone allowance,Completely correct,Yes - clear and useful,,How is savings for over 70 assessed in medical card applications ,Completely incorrect,No - too confusing or unhelpful,"The answer did not mention this important piece of information. Savings and investments assessment - Your savings and investments are also reviewed by the HSE in the means test for a medical card. Savings and investments of up to €36000 for a single person and up to €72000 for a couple are disregarded. Interest on savings or investments over the limit is taken into account in the means test. This means that only the interest or income earned on your savings and investments will be counted as income not the total value of the savings or investments themselves. (VERY IMPORTANT INFO)",What is the means test for Household Benefits Package ,Completely incorrect,No - too confusing or unhelpful,"HBP applicants are means tested in situations the applicant has a dependent who is not in receipt of a qualifying SW payment is still on a low income.","Simple questions seem to generate a good quality answer more complex questions are not providing the depth or quality of information needed for an IO inform people or for a person at home to be properly informed. I do like that there are links in the response to further information."
+I was prompted with further questions, I choose - Are there exceptions to the means test over 70, 
+The answer waffled and 4 lines into the text discretionary medical cards are mentioned. 
+",What is the means test for Household Benefits Package ,Completely incorrect,No - too confusing or unhelpful,"HBP applicants are means tested in situations the applicant has a dependent who is not in receipt of a qualifying SW payment is still on a low income. 
+See 3 Sections on link below - How to qualify for the Household Benefits Package - People aged under 70 - The means test
+www.citizensinformation.ie/en/social-welfare/extra-social-welfare-benefits/household-benefits-package/#e8ca54
+","Simple questions seem to generate a good quality answer, more complex questions are not providing the depth or quality of information needed for an IO inform people or for a person at home to be properly informed. I do like that there are links in the response to further information. "
 2,Ashbourne Co Meath,How much is Maternity Benefit,Completely correct,Yes - clear and useful,,Is Disability Allowance means tested.,Completely correct,Yes - clear and useful,They should put in regarding savings and how this effects your payment.,Can my employer change my contract of employment,Completely correct,Yes - clear and useful,,Very good. Quick response and I like that there are further questions on your subject under their response.
-3,Hainault House Tallaght Dublin 24,"I asked about income thresholds for fuel allowance and i asked about half rate carers eligibility with other payments I was aware you could i.e. state pension etc and the answer was correct. I than asked can i get it with jobseekers for example and it stated i cant which is also correct.",Completely correct,Yes - clear and useful,Does it read the website in real time? If the website is experiencing technical difficulties will this also effect the chat functionality as it wont have any resource to pull the information from. Could it be developed into an application for both android and iOS,I asked about opening hours for various centres,Completely incorrect,Somewhat - needs clarification,The website displays the centre opening hours however when i asked the chat option it stated they are not available. I feel this could be a common question.,I asked about a scheme that expired in 2013 and the return was accurate and advised me it expired in 2013,Completely correct,Yes - clear and useful,,I feel this will be a huge benefit to all both staff and clients. I feel promoting it as an application and marketing it to the public will hugely reduce the queues in various centres.
-4,Letterkenny Co Donegal,Spouse of an EU citizen on stamp 4 has a 18 year old daughter living with him and his spouse. Daughter on Stamp 3. His daughter is non EU. What is the process to change status from stamp 3 to stamp 4 and what to do on the INIS portal,Partially correct,No - too confusing or unhelpful,"Repetition of existing information without decisive answer. The bot answered generically regarding registration of non EU nationals instead of what a non EU child on stamp 3 needs to do when turning 18 or what form or application is required on INIS portal",I live in ROI and work in NI. I want to go to a GP in NI and get referred for a procedure in Ballykely Hospital in NI. Can I and if so will I have to pay?,Mostly incorrect,No - too confusing or unhelpful,"It's not enough to say that health care is complex in a cross border scenario. The key to the question was the frontier working status and therefore how frontier workers are treated specifically in a frontier worker context i.e. not as a visitor not as an emergency as a frontier worker","I'm married live in Donegal 2 children 8 and 10 work part time in Letterkenny. My youngest child is autistic and non verbal. My husband works in Derry. What are we entitled to as a family and where should we be paying tax?",Completely incorrect,No - too confusing or unhelpful,"Did not identify DCA CA or cares support grant from Ireland. Did not identify DLA or UC in Northern Ireland. Did not flag issues with taxation.","I put a lot of queries through this and was surprised at times where it got it very right. Simple things like am i entitled to jobseekers was answered correctly but only by regurgitating what is online not by giving a definitive yes or no. A lot of the answers did not leave users that they no longer needed to speak to someone from CIS sometimes it gave wrong information re entitlement which may lead to situations where people lose out completely. Where competing benefits existed such as JST and WFP it was not of any use more complicated queries around options for education and funding sources were answered incorrectly. Cross Border issues were not even acknowledged. Practical application of the information such as queries regarding how someone does something online were unanswered."
-5,Ennis CIC,how much parental leave can i take?,Mostly correct,Yes - clear and useful,"The first sentence stated Parental leave allows you to take up to 26 weeks of unpaid leave for each eligible child before their 12th birthday. Suggest including (or 16th birthday if your child has a disability or long-term illness) in the first sentence.",how much parental leave have i taken?,Completely correct,Yes - clear and useful,,how much income can i earn from employment whilst on carers benefit,Completely correct,Yes - clear and useful,,very quick response to questions
-6,Ennis Co Clare,What level of care must be provided in order to qualify for Carer's Allowance?,Completely correct,Yes - clear and useful,The question was answered correctly. However for the public it would be useful if the answer also referred to the fact that the level of care provided is only one factor taken into consideration when a Carer's Allowance application is being assessed.,"If a separated couple continue to live in the same residence will their cohabitation impact on their ability to claim a Social Welfare payment.",Partially correct,Somewhat - needs clarification,"The answer suggests that cohabitation will always impact on rate of SW payment. In discussions with Social Welfare departments information officers have been advised that SW is aware that separated couples are continuing to live in the same property due to the national housing crisis. SW have stated that they are open in some limited circumstances to treating claimants as Single despite the fact that they continue to reside with a former partner.",How to File an LPT Return when Personal Identification Number is not known?,Completely correct,Yes - clear and useful,None,"I found the app very useful with mostly clear and easy to understand answers. It will be of benefit to the public and information providers."
-7,Clondalkin,What is the eligibility criteria for jobskeers allowance,Completely correct,Yes - clear and useful,"This answer is clear for a single individual the answer does not include family circumstances partner or children etc.",How do I qualify for the warmer homes scheme,Completely correct,Yes - clear and useful,N/A,How do I change from stamp 1G to Stamp 4,Completely correct,Yes - clear and useful,N/A,"At the end of each answer there are options to get further information relating to ones main question. I have clicked into some of these questions and yes they give further information but one in particular in relation to Stamp 4 asks What documents are required to apply for Stamp 4? the answer then goes onto to discuss applying for a Stamp 4 your non-EEA spouse or civil partner and documents needed."
+3,"Hainault House, Tallaght, Dublin 24","I asked about income thresholds for fuel allowance and i asked about half rate carers eligibility with other payments I was aware you could, i.e. state pension etc and the answer was correct. I than asked can i get it with jobseekers for example and it stated i cant which is also correct. ",Completely correct,Yes - clear and useful,Does it read the website in real time? If the website is experiencing technical difficulties will this also effect the chat functionality as it wont have any resource to pull the information from. Could it be developed into an application for both android and iOS,I asked about opening hours for various centres,Completely incorrect,Somewhat - needs clarification,The website display's the centre opening hours however when i asked the chat option it stated they are not available. I feel this could be a common question.,I asked about a scheme that expired in 2013 and the return was accurate and advised me it expired in 2013,Completely correct,Yes - clear and useful,,I feel this will be a huge benefit to all both staff and clients. I feel promoting it as an application and marketing it to the public will hugely reduce the queues in various centres.
+4,"Letterkenny, Co Donegal",Spouse of an EU citizen on stamp 4 has a 18 year old daughter living with him and his spouse. Daughter on Stamp 3. His daughter is non EU. What is the process to change status from stamp 3 to stamp 4 and what to do on the INIS portal,Partially correct,No - too confusing or unhelpful,"repetition of existing information without decisive answer. For example, the bot answered generaticly regarding registration of non EU nationals instead of what a non EU child on stamp 3 needs to do when turning 18 or what form or application is required on INIS portal",I live in ROI and work in NI. I want to go to a GP in NI and get referred for a procedure in Ballykely Hospital in NI. Can I and if so will I have to pay?,Mostly incorrect,No - too confusing or unhelpful,"It's not enough to say that health care is complex in a cross border scenario, the key to the question was the frontier working status and therefore how frontier workers are treated specificly in a frontier worker context. i.e., not as a visitor, not as an emergency, as a frontier worker","I'm married, live in Donegal, 2 children, 8 and 10, work part time in Letterkenny. My youngest child is autistic and non verbal. My husband works in Derry. What are we entitled to as a family and where should we be paying tax?",Completely incorrect,No - too confusing or unhelpful,"Did not identify DCA, CA or cares support grant from Ireland. Did not identify DLA or UC in Northern Ireland. Did not flag issues with taxation. Should consider when signposting citizens to Gov departments instead of advising them on their postion forst places the user in a disadvantaged position. ","I put a lot of queries through this and was surprised at times where it got it very right. simple things like am i entitled to jobseekers was answered correctly but only by reguratating what is online not by giving a definitive yes or no. A lot of the answers did not leave users that they no longer needed to speak to someone from CIS, sometimes it gave wrong information re entitlement which may lead to situations where people lose out completley. Where competing benefits existed such as JST and WFP it was not of any use, more compicated queries around options for education and funding sources were answered incorrectly. Cross Border issues were not even acknoldged. Practicle application of the information such as queries regarding how someone does something online were unanswered. We get those queries a lot everything from welfare online, LPT online, myaccount to INIS. Also, when asking the questions I was inputing the information that I would need to ask a client in order to answer their query. Most users will not know what details are relevant in their situation in order to do so, many are semi if not completley illiterate, written english is not their first language and general colloquialisms will be a barrier"
+5,Ennis CIC,how much parental leave can i take?,Mostly correct,Yes - clear and useful,"The first sentence stated ""Parental leave allows you to take up to 26 weeks of unpaid leave for each eligible child before their 12th birthday"".  Suggest including (or 16th birthday if your child has a disability or long-term illness) in the first sentence.",how much parental leave have i taken?,Completely correct,Yes - clear and useful,,how much income can i earn from employment whilst on carers benefit,Completely correct,Yes - clear and useful,,very quick response to questions
+6,"Ennis, Co, Clare",What level of care must be provided in order to qualify for Carer's Allowance?,Completely correct,Yes - clear and useful,The question was answered correctly. However for the public it would be useful if the answer also referred to the fact that the level of care provided is only one factor taken into consideration when a Carer's Allowance application is being assessed.,"If a separated couple continue to live in the same residence, will their cohabitation impact on their ability to claim a Social Welfare payment.",Partially correct,Somewhat - needs clarification,"The answer suggests that cohabitation will always impact on rate of SW payment. In discussions with Social Welfare departments, information officers have been advised that SW is aware that separated couples are continuing to live in the same property due to the national housing crisis. SW have stated that they are open,  in some limited circumstances, to treating claimants as Single despite the fact that they continue to reside with a former partner. ",How to File an LPT Return when Personal Identification Number is not known?,Completely correct,Yes - clear and useful,None,"I found the app very useful, with mostly  clear and easy to understand answers. It will be of benefit to the public and information providers."
+7,Clondalkin,What is the eligibility criteria for jobskeers allowance,Completely correct,Yes - clear and useful,"This answer is clear for a single individual, the answer does not include family circumstances, partner or children etc.",How do I qualify for the warmer homes scheme,Completely correct,Yes - clear and useful,N/A,How do I change from stamp 1G to Stamp 4,Completely correct,Yes - clear and useful,N/A,"At the end of each answer there are options to get further information  relating to ones main question. I have clicked into some of these questions and yes they give further information, but one in particular in relation to Stamp 4, asks ""What documents are required to apply for Stamp 4?"" the answer then goes onto to discuss applying  for a Stamp 4, your non-EEA spouse or civil partner and documents needed."
 8,Sligo,How to bring partner to Ireland,Partially correct,Somewhat - needs clarification,Further criteria are required regarding income and proof of relationship. Could direct to the guidelines on the Government immigration website,There is a problem with a waste drain in adjacent property,Mostly correct,Yes - clear and useful,,Faulty goods bought from China,Mostly correct,Yes - clear and useful,,It is worryingly good
-9,Cork,"I am on disability allowance and want to take up work. How many hours can I work and what can I earn?",Completely correct,Yes - clear and useful,"I asked a follow up question with a figure of how much the caller was earning and it was correct. It linked to the rates of payments to get the rate. The way it said For exact rates and how this affects your payment you should refer to the appropriate reduced rates of payment for Disability Allowance. I dont think that would be very clear what that means to a user. They also might struggle where to go in the Rates of payment booklet.","I have been out of work on sick leave for nearly 2 years. Do I still get my holidays and public holidays?",Mostly correct,Somewhat - needs clarification,"The answer specifically about the public holidays wasnt correct. It said you are not entitled to pay or time off for a public holiday if you have been off work for more than 26 weeks due to an ordinary illness or accident or more than 52 weeks due to an occupational accident. You can find more details on the public holidays page. It doesnt explain the entitlements for FT/PT workers to benefit if they are out for less than the 26weeks.","Im a single parent. I have two children and am on lone parent. If I work 20hours a week how would my payment be affected?",Partially correct,Somewhat - needs clarification,"The reply mentioned For example if you work 20 hours a week your earnings will be assessed alongside any other income you receive such as maintenance payments or other social welfare benefits. (child maintenance is no longer assessed)","Excellent for straightforward questions. Needs improvement on complex scenarios and up-to-date policy information."
-10,Waterford CIC,Can a student on jobseekers transition apply for the back to education allowance,Completely correct,Yes - clear and useful,None,What are the entry requirements to be accepted onto BTEI courses,Mostly correct,Somewhat - needs clarification,Some colleges have their own criteria,As a newly qualified social care worker how do i register with Coru,Completely correct,Yes - clear and useful,None,Overall its very good. Easy to use and provides quick answers. Follow up questions are very useful.
-11,Tralee CIC,applying for a passport,Completely correct,Yes - clear and useful,None,separated and applying for one parent family payment,Completely correct,Yes - clear and useful,None,registering a death,Completely correct,Yes - clear and useful,None,Quick response. Easy to read. Concise answers. Links available for more information.
-12,Galway CIC,How much jobseekers allowance will I get,Completely correct,Yes - clear and useful,,How do I apply for a grant for insulation,Mostly correct,Somewhat - needs clarification,Warmer Homes Scheme was mentioned but Better Energy Homes Scheme and other grants available were not.,What can I do if my landlord has increased my rent,Completely correct,Yes - clear and useful,,It is good for basic information but does not give comprehensive answers to more complex questions.
-13,Dun Laoghaire,Rent supplement,Completely correct,Yes - clear and useful,None provided,Can I get housing assistance payment,Completely correct,Yes - clear and useful,None provided,What age can I get the state pension,Completely correct,Yes - clear and useful,None provided,Very efficient and accurate for basic queries.
-14,Drogheda,Can I get free travel,Completely correct,Yes - clear and useful,None,What is carers support grant,Completely correct,Yes - clear and useful,None,Can I get illness benefit,Completely correct,Yes - clear and useful,None,Straightforward questions answered well. Very quick responses.
-15,Fermoy CIC,Fuel Allowance means test for over 70,Completely correct,Yes - clear and useful,,How to apply for citizenship,Completely correct,Somewhat - needs clarification,The wording of entitlement if you are married to an Irish citizen could be made clearer.,Grants available for self employed,Completely correct,Yes - clear and useful,,It looks like a great tool. The follow up questions were very good too. It would certainly help the customer if they are computer literate.
-16,Bantry,"If I receive the household benefits package do I automatically receive the fuel allowance?",Completely correct,Yes - clear and useful,All follow up questions answered accurately,How do I put my dead spouses name on my baby's birth cert?,Completely correct,Yes - clear and useful,The follow up questions the chat provided were accurate and helpful,"I was sold a faulty refrigerator the seller is refusing to provide a refund or replacement what are my rights?",Mostly correct,Somewhat - needs clarification,"While the information was all correct the answer the chat provided was a bit waffly. It didn't answer the question directly or lay out steps to take clearly","Accurate for basic questions does the same job as a search on the website."
-17,Sligo CIC,Is an child who is not attending a SPHE Class entitled to supervision,Completely incorrect,No - too confusing or unhelpful,"Information was not contained in our website so I could not direct the client to the question",Tax implications of self employment,Completely correct,Yes - clear and useful,,Can I apply for Jobseekers Benefit if I have taken voluntary redundancy,Mostly correct,Somewhat - needs clarification,,"I think its ok for very general questions more complex question need be be teased out and very worrying that the information on the AI is not on our website"
-18,Dungarvan,I am a grandparent and currently have care of my two grandchildren. What supports are available to help me?,Partially correct,Somewhat - needs clarification,"Whilst it did refer to Grandparent rights and the issue of tax credits and housing grants it was not the most relevant information. There was no mention of Child Benefit Guardians Payments or Foster Care. Medical cards was not mentioned or other supports ie counselling for children. I felt a lot of the primary supports were not highlighted at all.",I am on critical skills permit. My husband has fallen ill and is unable to work. What options are open to us?,Partially correct,Somewhat - needs clarification,"The only link provided was to Green Card Permits which would be confusing to a client as it is now called Critical Skills Employment Permit. The links that would be more imminent would be Illness Benefit Disability Allowance Medical Card. There was nothing mentioned in relation to Medical supports which would be a major oversight. The third paragraph was extremely helpful as it indicated that personalised advice would be needed due to the complexity of the situation. Whilst I did tick that the answer was partially correct it really would not give anything for a client to feel any way reassured of their options.","I am a lone parent with three children all of whom have additional needs. The eldest is about to commence 3rd level education. I am appealing Carers Allowance for my youngest child. What other supports are available to me",Mostly correct,Yes - clear and useful,"I found this answer to be the most comprehensive so far. It provided a lot more relevant links to the client's particular situation. However I note there was no link to SUSI or the CAO application whereby you can apply for HEAR and DARE. HEAR was never mentioned. One parent family was not mentioned. I would like to see additional information on our ability to support clients with appeals","For the most part it was helpful but didn't give enough relevant information on scenarios. It needs to get better on picking up on the key points in the questions. I would not like to be overly reliant on AI as it does miss things on occasion."`;
+9,Cork,"I am on disability allowance and want to take up work. How many hours can I work and what can I earn?
+",Completely correct,Yes - clear and useful,"I asked a follow up question with a figure of how much the caller was earning and it was correct. It linked to the rates of payments to get the rate. The way it said '' For exact rates and how this affects your payment, you should refer to the appropriate reduced rates of payment for Disability Allowance.'' I dont think that would be very clear what that means to a user. They also might struggle where to go in the Rates of payment booklet.","I have been out of work on sick leave for nearly 2 years. Do I still get my holidays and public holidays?
+",Mostly correct,Somewhat - needs clarification,"The answer specifically about the public holidays wasnt correct. It said ''you are not entitled to pay or time off for a public holiday if you have been off work for more than 26 weeks due to an ordinary illness or accident, or more than 52 weeks due to an occupational accident. You can find more details on the public holidays page.'' it doesnt explain the entitlements for FT/PT workers to benefit if they are out for less than the 26weeks.","Im a single parent. I have two children and am on lone parent. If I work 20hours a week how would my payment be affected?
+",Partially correct,Somewhat - needs clarification,"The reply mentioned For example, if you work 20 hours a week, your earnings will be assessed alongside any other income you receive, such as maintenance payments or other social welfare benefits. ( child maintenance is no longer assessed)
+It didnt explain how the OPFP is means tested (first €165 disregarded) It did mention a possible entitlement to WFP but didn't go into any conditions of that. 
 
-            Papa.parse(csvData, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    testData = results.data;
-                    processData();
-                },
-                error: function(error) {
-                    console.error('Error parsing CSV:', error);
-                    document.getElementById('loading').innerHTML = `
-                        <h2 style="color: #ef4444;">❌ Error Loading Data</h2>
-                        <p style="color: #6b7280;">Please check the console for details.</p>
-                    `;
-                }
-            });
-        }
+It also stated ''It's important to note that the maximum number of hours you can work in an average working week is 48 hours, but this is averaged over a period, so working 20 hours a week should be within the allowable limit. You should check the specific income limits and eligibility criteria for these payments to see how your work hours might affect your entitlements.'' The average working week isn't relevant at all in this scenario. And the income limits and eligibility criteria weren't really explained
 
-        function processData() {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
+
+","It seems mostly useful as a tool.  Some of the information still needed further clarification but some information it provided was completely not relevant to the query. 
+It seems like a more tailored version of the website search. It may be useful in our daily work as an additional search tool to assist with queries. "
+10,Citizen Information Phone service,I asked a question re disability allowance and claiming for a family and taking up employment and how it affects the claim?,Partially correct,Somewhat - needs clarification,While it considered the means test from earnings it did not seek clarity regarding capital,I asked a question regarding somebody in receipt of one parent family and half rate carer's and taking up employment and how will it affect both payments,Partially correct,Somewhat - needs clarification,It gave the means test for carer's allowance but did not calculate the means from employment for the one parent family payment and suggested that the payment would not be altered which is incorrect.,I asked a housing question regarding housing needs assessment and the Hap payment and differential rent,Partially correct,Somewhat - needs clarification,The answer was a broad answer saying what the Hap limit was for the individual but no provision for going over that limit or giving an idea as to what the applicant needs to contribute towards the rent,The search engine is certainly faster but the answer's I received were partially correct and not looking at the secondary elements in terms of means testing.  It may be helpful as a search facility but if a customer were to receive incorrect information by using AskCI it may cause confusion for the client and we are then trying to explain that the answer is only partially correct.
+11,"Unit 8a Nessan House, Riverview Business Park, Bessboro Road, Cork. T12 EYOX",Where do I put all of my medical information in the invalidity pension form?,Mostly incorrect,Somewhat - needs clarification,"There answer given starts stating that the applicant ""need to provide detailed medical information to support [their] claim. This includes information about [their] illness or disability and how it affects [their] ability to work"". This is correct, but it went on to say that ""Typically, there will be sections in the form where you can describe your medical condition and provide any relevant medical reports or documentation"". This is not true for the Invalidity Pension form that the AI linked to (INV1). For Invalidity Pension, according to the operational guidelines, a diagnostic medical report is issued to the claimant to be completed by his/her medical doctor who should return tit to the department, as well as a self-assessment form for the claimant to fill out and send back to the department. Neither of these are in IVN1. This could be confusing and potentially misleading.",Can I avail of the Back to Work Enterprise Allowance after being on Jobseeker's Pay Related Benefit?,Mostly correct,Yes - clear and useful,,Can I apply for the local property tax without using a computer?,Mostly correct,Yes - clear and useful,,"It can give basic information well but it can struggle with queries with very specific information put into them (some means tests work well, others it can't do). Also where there is a gap in the websites information, such as the lack of information on how medical information is submitted by the applicant for Invalidity Pension, it inputted a generic answer that wasn't correct. Is this how the AI will respond when it encounters other gaps in our websites information, because in that case it may give out false information.  "
+12,"Galway, St. Augustine street.","How do I get an Irish embassy  in another country to affix a visa to my passport, after I have been granted a Join Family (Spouse) visa?",Mostly correct,Somewhat - needs clarification,"Say if it can be done by post, or if a personal appointment is necessary.",Are there any payments or income from me or my partner that are ignored for carers allowance means test? Also why do they ask for my income for a carers support grant if I am not getting carers alllowance... I thought the grant was not means tested?,Completely correct,Yes - clear and useful,,How does Revenue allocate payments of LPT if there are any arrears from previous years and what are the interests rate per year?,Completely correct,Yes - clear and useful,No problems with this question.  It led on to other related questions and gave me a proper overview of this issue. The suggested links under each answer are very helpful.,"I would find this tool very useful in my daily work.  The questions I submitted were straightforward and I knew the answers I was hoping to get, but if it works like this across the range of topics we assist with, it will be a great help."
+13,Tralee,"Can you help me with my pension forecast
+",Mostly incorrect,Somewhat - needs clarification,Some of the information is factually incorrect and it did not perform the pension forecast as requested,"I need an affidavit for my social housing application to say that my sister is my advocate, can you do this?",Partially correct,Somewhat - needs clarification,It didn't provide the affidavit.,"I was sent a renewal form for the Disabled Drivers Parking card but I've lost it, how can I get a new renewal form?
+",Completely correct,Yes - clear and useful,It could have provided a template letter for the client.,"It was easy enough to use.
+Would it not be better to use New Chats each time like other AI tools?
+As an IO I would find this to be an extra layer to the work I already do.
+"
+14,"Cork City South- Cornmarket Street
+Cork City North and Mallow- Blackpool ","I asked it to calculate how much Jobseeker's Allowance I could receive with part time earnings of €300 a week. I followed up my initial question with additional questions about specifics about having €15,000 and being 23",Partially correct,Yes - clear and useful,"It correctly identified that Jobseeker's Allowance is €244 full rate, and correctly explained the means test process. It assumed that I worked 3 days a week without me saying that I did, and applied a disregard of €60. It did not ask me about my assets. When I clarified that I have assets of €15,000, it correctly identified that this would not affect my means test, but then stated that the maximum rate of Jobseeker's Allowance is €294 despite giving the correct answer previously. I then said I was 23. It correctly said that a lower maximum would apply but did not say what.  It did not prompt me to add any of these details without me raising them first. A client who did not know to ask these questions might not get the right information.",I asked it to write a letter to my landlord complaining about a broken cooker,Mostly correct,Somewhat - needs clarification,"It formatted a letter, prompting additional details and specifics in the relevant section. It did not clarify that a worker cooker is  minimum standard for private rented accommodation, or advise me on how to escalate my complaint to the RTB or to a Local Authority Inspection. ","I asked it to calculate how much Working Family Payment if i have one child, no other income and wages of €400 a week",Completely incorrect,Yes - clear and useful,It explained the means test correctly ((Income limit - €400) x 60%) but incorrectly stated that the income limit for a one child family is €591 rather €705. ,"It made a basic and fundamental error regarding the WFP rate. It also initially got the rate of Jobseeker's Allowance correct, but later gave an incorrect figure. 
+
+It did not prompt me to clarify things like an Information Officer would. This lead it to giving information that is incorrect for some clients. For example for Jobseeker's it did not clarify my age. It also assumed that I worked 3 days a week without asking.
+
+The information is clear and I was prompted to look up some details, but it is written in the same tone as the website. I tried to vary the tone and voice of my own queries to prompt it to mirror me, but the same tone was given for each question. If the client is using the chatbot because they struggle to understand the website because of language difficulties or literacy level, they will likely have the same problem with the chatbot. "
+15,Fermoy CIC,Fuel Allowance means test for over 70,Completely correct,Yes - clear and useful,,How to apply for citizenship,Completely correct,Somewhat - needs clarification,The wording of entitlement if you are married to an Irish citizen could be made clearer.,Grants available for self employed,Completely correct,Yes - clear and useful,,It looks like a great tool.  The follow up questions were very good too.  It would certainly help the customer if they are computer literate.
+16,Bantry ,"If I receive the household benefits package, do I automatically receive the fuel allowance?",Completely correct,Yes - clear and useful,All follow up questions answered accurately ,How do I put my dead spouses name on my baby's birth cert?,Completely correct,Yes - clear and useful,The follow up questions the chat provided were accurate and helpful ,"I was sold a faulty refrigerator, the seller is refusing to provide a refund or replacement, what are my rights? ",Mostly correct,Somewhat - needs clarification,"While the information was all correct, the answer the chat provided was a bit ""waffly"". It didn't answer the question directly or lay out steps to take clearly ","Accurate for basic questions, does the same job as a search on the website. "
+17,Sligo CIC,Is an child who is not attending a SPHE Class entitled to supervision ,Completely incorrect,No - too confusing or unhelpful,"Information was not contained in our website, so I could not direct the client to the question",Tax implications of self employment,Completely correct,Yes - clear and useful,,Can I apply for Jobseekers Benefit if I have taken voluntary redundnacy,Mostly correct,Somewhat - needs clarification,,"I think its ok for very general questions, more complex question need be be teased out, and very worring that the information on the AI is not on our website"
+18,Dungarvan,I am a grandparent and currently have care of my two grandchildren. What supports are available to help me?,Partially correct,Somewhat - needs clarification,"Whilst it did refer to Grandparent rights and the issue of tax credits and housing grants, it was not the most relevant information.
+There was no mention of Child Benefit, Guardians Payments or Foster Care.  Medical cards was not mentioned or other supports, ie, counselling for children.
+
+I felt a lot of the primary supports were not highlighted at all. ",I am on critical skills permit. My husband has fallen ill and is unable to work. What options are open to us?,Partially correct,Somewhat - needs clarification,"The only link provided was to Green Card Permits, which would be confusing to a client as it is now called Critical Skills Employment Permit.
+
+The links that would be more imminent would be Illness Benefit, Disability Allowance, Medical Card.  There was nothing mentioned in relation to Medical supports which would be a major oversight.
+
+The third paragraph was extremely helpful as it indicated that personalised advice would be needed due to the complexity of the situation.
+
+Whilst I did tick that the answer was partially correct, it really would not give anything for a client to feel any way reassured of their options.","I am a lone parent with three children, all of whom have additional needs.  The eldest is about to commence 3rd level education.  I am appealing Carers Allowance for my youngest child.
+What other supports are available to me",Mostly correct,Yes - clear and useful,"I found this answer to be the most comprehensive so far.  It provided a lot more relevant links to the client's particular situation.
+
+However I note there was no link to SUSI or the CAO application whereby you can apply for HEAR and DARE.  HEAR was never mentioned.
+
+One parent family was not mentioned.
+
+I would like to see additional information on our ability to support clients with appeals  ","For the most part it was helpful but didn't give enough relevant information on scenarios. 
+
+It needs to get better on picking up on the key points in the questions.
+
+I would not like to be overly reliant on AI as it does miss things on occasion.
+"`;
+
+        // Data processing
+        let allQuestions = [];
+        let filteredQuestions = [];
+
+        function parseCSV() {
+            const lines = csvData.split('\n');
+            const headers = lines[0].split(',');
             
-            calculateMetrics();
-            createCharts();
-            generateQuickInsights();
-            generateOfficePerformance();
-            generateRAGInsights();
-            generateProblemAreas();
-            generateDetailedResults();
-            generateRecommendations();
-        }
-
-        function calculateMetrics() {
-            let totalQuestions = 0;
-            let completelyCorrect = 0;
-            let mostlyCorrect = 0;
-            let partiallyCorrect = 0;
-            let completelyIncorrect = 0;
-            let helpful = 0;
-            let somewhat = 0;
-            let notHelpful = 0;
-
-            const offices = new Set();
-
-            testData.forEach(row => {
-                offices.add(row['Office Location']);
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
                 
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
+                // Parse CSV line handling quoted fields with newlines
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                
+                const row = {};
+                headers.forEach((header, idx) => {
+                    row[header.trim()] = values[idx] || '';
+                });
+                
+                // Extract three question sets per respondent
+                for (let q = 1; q <= 3; q++) {
+                    const suffix = q === 1 ? '' : q.toString();
                     const question = row[`What question did you ask AskCI?${suffix}`];
                     const accuracy = row[`How accurate was the answer?${suffix}`];
                     const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-
-                    if (question && question.trim()) {
-                        totalQuestions++;
-                        
-                        if (accuracy) {
-                            if (accuracy.includes('Completely correct')) completelyCorrect++;
-                            else if (accuracy.includes('Mostly correct')) mostlyCorrect++;
-                            else if (accuracy.includes('Partially correct')) partiallyCorrect++;
-                            else if (accuracy.includes('Completely incorrect')) completelyIncorrect++;
-                        }
-
-                        if (helpfulness) {
-                            if (helpfulness.includes('Yes')) helpful++;
-                            else if (helpfulness.includes('Somewhat')) somewhat++;
-                            else if (helpfulness.includes('No')) notHelpful++;
-                        }
+                    const feedback = row[`Optional - include any specific problems or suggestions to this response?${suffix}`];
+                    
+                    if (question && question.trim() && accuracy) {
+                        allQuestions.push({
+                            id: `${row.ID}-${q}`,
+                            officeLocation: row['Office Location'],
+                            question: question.trim(),
+                            accuracy: accuracy.trim(),
+                            helpfulness: helpfulness ? helpfulness.trim() : '',
+                            feedback: feedback ? feedback.trim() : '',
+                            overallFeedback: row['Please share your overall feedback on AskCI']
+                        });
                     }
                 }
-            });
-
-            document.getElementById('totalQuestions').textContent = totalQuestions;
-            document.getElementById('totalOffices').textContent = offices.size;
+            }
             
-            const accuracyRate = totalQuestions > 0 ? 
-                ((completelyCorrect + mostlyCorrect) / totalQuestions * 100).toFixed(1) : 0;
-            const partialRate = totalQuestions > 0 ? 
-                (partiallyCorrect / totalQuestions * 100).toFixed(1) : 0;
-            const incorrectRate = totalQuestions > 0 ? 
-                (completelyIncorrect / totalQuestions * 100).toFixed(1) : 0;
-            const helpfulRate = totalQuestions > 0 ? 
-                (helpful / totalQuestions * 100).toFixed(1) : 0;
-
-            document.getElementById('accuracyRate').textContent = accuracyRate + '%';
-            document.getElementById('partialRate').textContent = partialRate + '%';
-            document.getElementById('incorrectRate').textContent = incorrectRate + '%';
-            document.getElementById('helpfulRate').textContent = helpfulRate + '%';
+            filteredQuestions = [...allQuestions];
         }
 
-        function createCharts() {
-            // Accuracy Chart
-            const accuracyCtx = document.getElementById('accuracyChart');
-            if (charts.accuracy) charts.accuracy.destroy();
+        function calculateStats() {
+            const total = allQuestions.length;
+            const accuracyCount = {};
+            const helpfulnessCount = {};
             
-            const accuracyCounts = countByCategory('accuracy');
-            charts.accuracy = new Chart(accuracyCtx, {
+            allQuestions.forEach(q => {
+                accuracyCount[q.accuracy] = (accuracyCount[q.accuracy] || 0) + 1;
+                if (q.helpfulness) {
+                    helpfulnessCount[q.helpfulness] = (helpfulnessCount[q.helpfulness] || 0) + 1;
+                }
+            });
+            
+            // Update dashboard
+            document.getElementById('totalQuestions').textContent = total;
+            
+            const completelyCorrect = accuracyCount['Completely correct'] || 0;
+            const successRate = ((completelyCorrect / total) * 100).toFixed(1);
+            document.getElementById('successRate').textContent = successRate + '%';
+            
+            const needsWork = (accuracyCount['Mostly correct'] || 0) + (accuracyCount['Partially correct'] || 0);
+            const needsWorkRate = ((needsWork / total) * 100).toFixed(1);
+            document.getElementById('needsWorkRate').textContent = needsWorkRate + '%';
+            
+            const failed = (accuracyCount['Mostly incorrect'] || 0) + (accuracyCount['Completely incorrect'] || 0);
+            const failureRate = ((failed / total) * 100).toFixed(1);
+            document.getElementById('failureRate').textContent = failureRate + '%';
+            
+            // Create charts
+            createAccuracyChart(accuracyCount, total);
+            createHelpfulnessChart(helpfulnessCount, total);
+            
+            // Populate office filter
+            const offices = [...new Set(allQuestions.map(q => q.officeLocation))].sort();
+            const officeSelect = document.getElementById('officeFilter');
+            offices.forEach(office => {
+                const option = document.createElement('option');
+                option.value = office;
+                option.textContent = office;
+                officeSelect.appendChild(option);
+            });
+        }
+
+        function createAccuracyChart(data, total) {
+            const ctx = document.getElementById('accuracyChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Completely Correct', 'Mostly Correct', 'Partially Correct', 'Completely Incorrect'],
+                    labels: ['Completely Correct', 'Mostly Correct', 'Partially Correct', 'Mostly Incorrect', 'Completely Incorrect'],
                     datasets: [{
                         data: [
-                            accuracyCounts.completelyCorrect,
-                            accuracyCounts.mostlyCorrect,
-                            accuracyCounts.partiallyCorrect,
-                            accuracyCounts.completelyIncorrect
+                            data['Completely correct'] || 0,
+                            data['Mostly correct'] || 0,
+                            data['Partially correct'] || 0,
+                            data['Mostly incorrect'] || 0,
+                            data['Completely incorrect'] || 0
                         ],
-                        backgroundColor: ['#10b981', '#34d399', '#fbbf24', '#ef4444']
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#f97316', '#ef4444']
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        title: {
-                            display: true,
-                            text: 'Answer Accuracy Distribution',
-                            font: { size: 16, weight: 'bold' }
-                        },
                         legend: {
                             position: 'bottom'
                         }
                     }
                 }
             });
+        }
 
-            // Helpfulness Chart
-            const helpCtx = document.getElementById('helpfulnessChart');
-            if (charts.helpfulness) charts.helpfulness.destroy();
-            
-            const helpCounts = countByCategory('helpfulness');
-            charts.helpfulness = new Chart(helpCtx, {
+        function createHelpfulnessChart(data, total) {
+            const ctx = document.getElementById('helpfulnessChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Clear & Useful', 'Needs Clarification', 'Confusing/Unhelpful'],
                     datasets: [{
                         data: [
-                            helpCounts.helpful,
-                            helpCounts.somewhat,
-                            helpCounts.notHelpful
+                            data['Yes - clear and useful'] || 0,
+                            data['Somewhat - needs clarification'] || 0,
+                            data['No - too confusing or unhelpful'] || 0
                         ],
-                        backgroundColor: ['#10b981', '#fbbf24', '#ef4444']
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        title: {
-                            display: true,
-                            text: 'Helpfulness to Citizens',
-                            font: { size: 16, weight: 'bold' }
-                        },
                         legend: {
                             position: 'bottom'
                         }
@@ -720,758 +839,208 @@
             });
         }
 
-        function countByCategory(type) {
-            const counts = {
-                completelyCorrect: 0,
-                mostlyCorrect: 0,
-                partiallyCorrect: 0,
-                completelyIncorrect: 0,
-                helpful: 0,
-                somewhat: 0,
-                notHelpful: 0
+        function displayQuestions() {
+            const sections = {
+                'Completely correct': 'completely-correct-section',
+                'Mostly correct': 'mostly-correct-section',
+                'Partially correct': 'partially-correct-section',
+                'Mostly incorrect': 'mostly-incorrect-section',
+                'Completely incorrect': 'completely-incorrect-section'
             };
-
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    
-                    if (!question || !question.trim()) continue;
-
-                    if (type === 'accuracy') {
-                        const accuracy = row[`How accurate was the answer?${suffix}`];
-                        if (accuracy) {
-                            if (accuracy.includes('Completely correct')) counts.completelyCorrect++;
-                            else if (accuracy.includes('Mostly correct')) counts.mostlyCorrect++;
-                            else if (accuracy.includes('Partially correct')) counts.partiallyCorrect++;
-                            else if (accuracy.includes('Completely incorrect')) counts.completelyIncorrect++;
-                        }
-                    } else if (type === 'helpfulness') {
-                        const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-                        if (helpfulness) {
-                            if (helpfulness.includes('Yes')) counts.helpful++;
-                            else if (helpfulness.includes('Somewhat')) counts.somewhat++;
-                            else if (helpfulness.includes('No')) counts.notHelpful++;
-                        }
-                    }
-                }
+            
+            // Clear all sections
+            Object.values(sections).forEach(sectionId => {
+                document.getElementById(sectionId).innerHTML = '';
             });
-
-            return counts;
-        }
-
-        function generateQuickInsights() {
-            const counts = countByCategory('accuracy');
-            const totalQuestions = counts.completelyCorrect + counts.mostlyCorrect + 
-                                  counts.partiallyCorrect + counts.completelyIncorrect;
-
-            const insights = [];
-
-            // Positive insights
-            if (counts.completelyCorrect / totalQuestions > 0.5) {
-                insights.push({
-                    type: 'success',
-                    title: 'Strong Performance on Straightforward Questions',
-                    text: `${counts.completelyCorrect} out of ${totalQuestions} questions (${(counts.completelyCorrect/totalQuestions*100).toFixed(1)}%) were answered completely correctly. The system excels at clear, well-documented queries.`
-                });
-            }
-
-            // Warning insights
-            if (counts.completelyIncorrect > 0) {
-                insights.push({
-                    type: 'warning',
-                    title: 'Critical Accuracy Issues Detected',
-                    text: `${counts.completelyIncorrect} questions received completely incorrect answers. These need immediate investigation and likely indicate knowledge base gaps or retrieval issues.`
-                });
-            }
-
-            if (counts.partiallyCorrect > totalQuestions * 0.2) {
-                insights.push({
-                    type: 'info',
-                    title: 'Incomplete Responses Common',
-                    text: `${counts.partiallyCorrect} questions (${(counts.partiallyCorrect/totalQuestions*100).toFixed(1)}%) were only partially answered correctly, suggesting the RAG system may be retrieving relevant but incomplete context.`
-                });
-            }
-
-            // Complex query insight
-            const complexIndicators = ['cross border', 'married', 'multiple', 'family', 'children'];
-            let complexQueries = 0;
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const question = (row[`What question did you ask AskCI?${suffix}`] || '').toLowerCase();
-                    if (complexIndicators.some(indicator => question.includes(indicator))) {
-                        complexQueries++;
-                    }
-                }
+            
+            // Group questions by accuracy
+            const grouped = {};
+            filteredQuestions.forEach(q => {
+                if (!grouped[q.accuracy]) grouped[q.accuracy] = [];
+                grouped[q.accuracy].push(q);
             });
-
-            if (complexQueries > 0) {
-                insights.push({
-                    type: 'info',
-                    title: 'Complex Multi-Factor Queries Need Attention',
-                    text: `Approximately ${complexQueries} questions involved complex scenarios with multiple factors. These queries often received partial or incorrect answers, indicating a need for better handling of multi-part queries.`
-                });
-            }
-
-            const html = insights.map(insight => `
-                <div class="issue-card ${insight.type}">
-                    <div class="issue-title">${insight.title}</div>
-                    <div class="issue-description">${insight.text}</div>
-                </div>
-            `).join('');
-
-            document.getElementById('quickInsights').innerHTML = html;
-        }
-
-        function generateOfficePerformance() {
-            const officeStats = {};
-
-            testData.forEach(row => {
-                const office = row['Office Location'];
-                if (!officeStats[office]) {
-                    officeStats[office] = {
-                        total: 0,
-                        correct: 0,
-                        helpful: 0
-                    };
-                }
-
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    
-                    if (question && question.trim()) {
-                        officeStats[office].total++;
-                        
-                        const accuracy = row[`How accurate was the answer?${suffix}`];
-                        if (accuracy && (accuracy.includes('Completely correct') || accuracy.includes('Mostly correct'))) {
-                            officeStats[office].correct++;
-                        }
-
-                        const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-                        if (helpfulness && helpfulness.includes('Yes')) {
-                            officeStats[office].helpful++;
-                        }
-                    }
-                }
-            });
-
-            let html = '';
-            Object.entries(officeStats).forEach(([office, stats]) => {
-                const accuracyPct = (stats.correct / stats.total * 100).toFixed(0);
-                const helpfulPct = (stats.helpful / stats.total * 100).toFixed(0);
+            
+            // Display in each section
+            Object.entries(sections).forEach(([accuracy, sectionId]) => {
+                const questions = grouped[accuracy] || [];
+                const count = questions.length;
+                const countId = sectionId.replace('-section', '-count');
+                document.getElementById(countId).textContent = count;
                 
-                html += `
-                    <tr>
-                        <td style="font-weight: 600; color: #111827;">${office}</td>
-                        <td>${stats.total}</td>
-                        <td>
-                            <span class="badge ${accuracyPct >= 70 ? 'badge-green' : accuracyPct >= 50 ? 'badge-yellow' : 'badge-red'}">
-                                ${accuracyPct}%
-                            </span>
-                            <div class="progress-bar" style="margin-top: 4px;">
-                                <div class="progress-fill ${accuracyPct >= 70 ? 'green' : accuracyPct >= 50 ? 'yellow' : 'red'}" 
-                                     style="width: ${accuracyPct}%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge ${helpfulPct >= 70 ? 'badge-green' : helpfulPct >= 50 ? 'badge-yellow' : 'badge-red'}">
-                                ${helpfulPct}%
-                            </span>
-                            <div class="progress-bar" style="margin-top: 4px;">
-                                <div class="progress-fill ${helpfulPct >= 70 ? 'green' : helpfulPct >= 50 ? 'yellow' : 'red'}" 
-                                     style="width: ${helpfulPct}%"></div>
-                            </div>
-                        </td>
-                    </tr>
+                const container = document.getElementById(sectionId);
+                questions.forEach(q => {
+                    container.appendChild(createQuestionCard(q));
+                });
+            });
+        }
+
+        function createQuestionCard(q) {
+            const card = document.createElement('div');
+            card.className = 'question-card ' + q.accuracy.toLowerCase().replace(/ /g, '-');
+            card.dataset.accuracy = q.accuracy;
+            card.dataset.helpfulness = q.helpfulness;
+            card.dataset.office = q.officeLocation;
+            
+            const accuracyClass = getAccuracyBadgeClass(q.accuracy);
+            const helpfulnessClass = getHelpfulnessBadgeClass(q.helpfulness);
+            
+            card.innerHTML = `
+                <div class="question-text">${q.question}</div>
+                <div class="question-meta">
+                    <span class="badge ${accuracyClass}">${q.accuracy}</span>
+                    ${q.helpfulness ? `<span class="badge ${helpfulnessClass}">${q.helpfulness}</span>` : ''}
+                    <span class="badge badge-gray">📍 ${q.officeLocation}</span>
+                </div>
+                ${q.feedback ? `<div class="question-feedback"><strong>Feedback:</strong> ${q.feedback}</div>` : ''}
+            `;
+            
+            return card;
+        }
+
+        function getAccuracyBadgeClass(accuracy) {
+            const map = {
+                'Completely correct': 'badge-green',
+                'Mostly correct': 'badge-blue',
+                'Partially correct': 'badge-yellow',
+                'Mostly incorrect': 'badge-orange',
+                'Completely incorrect': 'badge-red'
+            };
+            return map[accuracy] || 'badge-gray';
+        }
+
+        function getHelpfulnessBadgeClass(helpfulness) {
+            const map = {
+                'Yes - clear and useful': 'badge-green',
+                'Somewhat - needs clarification': 'badge-yellow',
+                'No - too confusing or unhelpful': 'badge-red'
+            };
+            return map[helpfulness] || 'badge-gray';
+        }
+
+        function displaySuccessFailureComparison() {
+            // Success patterns
+            const successPatterns = [
+                'Simple, straightforward questions (e.g., payment amounts, basic eligibility)',
+                'Single-topic queries without complex scenarios',
+                'Questions about well-documented schemes and payments',
+                'Factual information requests (e.g., forms, documents needed)',
+                'Basic procedural questions (e.g., how to apply)'
+            ];
+            
+            const successList = document.getElementById('successPatterns');
+            successPatterns.forEach(pattern => {
+                const li = document.createElement('li');
+                li.textContent = pattern;
+                successList.appendChild(li);
+            });
+            
+            // Failure patterns
+            const failurePatterns = [
+                'Cross-border queries (ROI/NI scenarios) - consistently failed',
+                'Complex means testing scenarios with multiple variables',
+                'Questions requiring multiple benefit calculations',
+                'Queries about edge cases or exceptions to rules',
+                'Outdated terminology (e.g., "Green Card" instead of "Critical Skills Permit")',
+                'Missing practical "how-to" information (e.g., opening hours)',
+                'Incomplete information on savings thresholds and assessment methods',
+                'Waffling instead of providing direct, clear answers',
+                'Questions requiring personalized advice or nuanced understanding'
+            ];
+            
+            const failureList = document.getElementById('failurePatterns');
+            failurePatterns.forEach(pattern => {
+                const li = document.createElement('li');
+                li.textContent = pattern;
+                failureList.appendChild(li);
+            });
+        }
+
+        function displayOverallFeedback() {
+            const feedbackContainer = document.getElementById('overallFeedback');
+            const uniqueFeedback = new Map();
+            
+            allQuestions.forEach(q => {
+                if (q.overallFeedback && q.overallFeedback.trim()) {
+                    uniqueFeedback.set(q.officeLocation, q.overallFeedback.trim());
+                }
+            });
+            
+            if (uniqueFeedback.size === 0) {
+                feedbackContainer.innerHTML = '<p style="color: #6b7280;">No overall feedback provided.</p>';
+                return;
+            }
+            
+            uniqueFeedback.forEach((feedback, office) => {
+                const card = document.createElement('div');
+                card.className = 'feedback-card';
+                card.innerHTML = `
+                    <div class="feedback-office">📍 ${office}</div>
+                    <div class="feedback-text">${feedback}</div>
                 `;
+                feedbackContainer.appendChild(card);
             });
-
-            document.querySelector('#officePerformanceTable tbody').innerHTML = html;
         }
 
-        function generateRAGInsights() {
-            // 1. Retrieval Issues
-            const retrievalIssues = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const comments = (row[`Optional - include any specific problems or suggestions to this response?${suffix}`] || '').toLowerCase();
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    
-                    if (comments.includes('not mentioned') || comments.includes('did not mention') || 
-                        comments.includes('no mention') || comments.includes('missing')) {
-                        retrievalIssues.push({
-                            office: row['Office Location'],
-                            question: question,
-                            issue: 'Missing key information in response',
-                            details: comments
-                        });
-                    }
-                    
-                    if (comments.includes('link') && (comments.includes('wrong') || comments.includes('incorrect') || 
-                        comments.includes('confusing') || comments.includes('not available'))) {
-                        retrievalIssues.push({
-                            office: row['Office Location'],
-                            question: question,
-                            issue: 'Link/reference problems',
-                            details: comments
-                        });
-                    }
-                }
-            });
-
-            const retrievalHtml = retrievalIssues.length > 0 ? `
-                <div class="issue-grid">
-                    ${retrievalIssues.slice(0, 5).map((issue, idx) => `
-                        <div class="issue-card warning">
-                            <div class="issue-title">🔍 ${issue.issue}</div>
-                            <div class="issue-description">
-                                <strong>Question:</strong> ${issue.question}<br>
-                                <strong>Office:</strong> ${issue.office}<br>
-                                <strong>Feedback:</strong> ${issue.details.substring(0, 200)}...
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="recommendation">
-                    <strong>RAG Recommendation:</strong> Review and improve retrieval scoring. Consider:
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>Adjusting embedding model to better capture semantic meaning</li>
-                        <li>Increasing the number of retrieved chunks (top-k)</li>
-                        <li>Implementing hybrid search (keyword + semantic)</li>
-                        <li>Adding metadata filters to improve relevance</li>
-                        <li>Reviewing chunk overlap settings</li>
-                    </ul>
-                </div>
-            ` : '<p style="color: #10b981;">✅ No significant retrieval issues detected.</p>';
-
-            document.getElementById('retrievalIssues').innerHTML = retrievalHtml;
-
-            // 2. Chunking Issues
-            const chunkingIssues = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const comments = (row[`Optional - include any specific problems or suggestions to this response?${suffix}`] || '').toLowerCase();
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    
-                    if ((accuracy && accuracy.includes('Partially correct')) || 
-                        comments.includes('incomplete') || comments.includes('more detail') ||
-                        comments.includes('should include') || comments.includes('missing information')) {
-                        chunkingIssues.push({
-                            office: row['Office Location'],
-                            question: row[`What question did you ask AskCI?${suffix}`],
-                            details: comments
-                        });
-                    }
-                }
-            });
-
-            const chunkingHtml = chunkingIssues.length > 0 ? `
-                <p><strong>Detected Issues:</strong> ${chunkingIssues.length} responses contained incomplete or fragmented information.</p>
-                <div class="recommendation">
-                    <strong>RAG Recommendation:</strong> Optimize chunking strategy:
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>Increase chunk size to capture more complete context (try 750-1000 tokens)</li>
-                        <li>Increase chunk overlap (try 150-200 tokens overlap)</li>
-                        <li>Implement semantic chunking to keep related information together</li>
-                        <li>Consider using parent-child chunking for hierarchical content</li>
-                        <li>Review pages that are being split at critical information boundaries</li>
-                    </ul>
-                </div>
-                <div class="issue-grid">
-                    ${chunkingIssues.slice(0, 3).map(issue => `
-                        <div class="issue-card info">
-                            <div class="issue-title">Example: ${issue.question}</div>
-                            <div class="issue-description">
-                                <strong>Office:</strong> ${issue.office}<br>
-                                <strong>Issue:</strong> ${issue.details.substring(0, 150)}...
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p style="color: #10b981;">✅ No significant chunking issues detected.</p>';
-
-            document.getElementById('chunkingIssues').innerHTML = chunkingHtml;
-
-            // 3. Knowledge Base Gaps
-            const kbGaps = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    const comments = (row[`Optional - include any specific problems or suggestions to this response?${suffix}`] || '').toLowerCase();
-                    
-                    if (accuracy && accuracy.includes('Completely incorrect')) {
-                        kbGaps.push({
-                            office: row['Office Location'],
-                            question: row[`What question did you ask AskCI?${suffix}`],
-                            feedback: comments
-                        });
-                    }
-                }
-            });
-
-            const kbHtml = kbGaps.length > 0 ? `
-                <p><strong>Critical:</strong> ${kbGaps.length} questions received completely incorrect answers, indicating significant knowledge gaps.</p>
-                <div class="recommendation">
-                    <strong>Action Required:</strong> Update Wagtail CMS content and trigger knowledge base refresh:
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>Review and update pages for the topics listed below</li>
-                        <li>Ensure means testing information is current and complete</li>
-                        <li>Add or update information on cross-border scenarios</li>
-                        <li>Verify all scheme names and details are current</li>
-                        <li>Add explicit sections for edge cases and exceptions</li>
-                        <li>Trigger re-embedding after CMS updates</li>
-                    </ul>
-                </div>
-                <div class="question-list">
-                    ${kbGaps.map(gap => `
-                        <div class="question-item" style="border-left: 3px solid #ef4444;">
-                            <div class="question-text">❌ ${gap.question}</div>
-                            <div class="question-meta">📍 ${gap.office}</div>
-                            ${gap.feedback ? `<div class="question-feedback">${gap.feedback}</div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p style="color: #10b981;">✅ No critical knowledge base gaps detected.</p>';
-
-            document.getElementById('knowledgeGaps').innerHTML = kbHtml;
-
-            // 4. Generation Quality
-            const generationIssues = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const comments = (row[`Optional - include any specific problems or suggestions to this response?${suffix}`] || '').toLowerCase();
-                    const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-                    
-                    if (comments.includes('waffl') || comments.includes('confusing') || 
-                        comments.includes('not clear') || comments.includes('vague') ||
-                        (helpfulness && helpfulness.includes('No'))) {
-                        generationIssues.push({
-                            office: row['Office Location'],
-                            question: row[`What question did you ask AskCI?${suffix}`],
-                            issue: comments
-                        });
-                    }
-                }
-            });
-
-            const genHtml = generationIssues.length > 0 ? `
-                <p>${generationIssues.length} responses had issues with clarity, directness, or helpfulness.</p>
-                <div class="recommendation">
-                    <strong>RAG Recommendation:</strong> Improve prompt engineering and generation:
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>Update system prompt to prioritize direct, actionable answers</li>
-                        <li>Add instruction to structure responses with clear steps when appropriate</li>
-                        <li>Implement response templates for common query types</li>
-                        <li>Consider adding a post-processing step to format responses consistently</li>
-                        <li>Adjust temperature/top_p for more focused outputs (try temp: 0.3-0.5)</li>
-                        <li>Add explicit instruction to avoid "waffling" or repetition</li>
-                    </ul>
-                </div>
-                <div class="issue-grid">
-                    ${generationIssues.slice(0, 3).map(issue => `
-                        <div class="issue-card warning">
-                            <div class="issue-title">🎯 ${issue.question}</div>
-                            <div class="issue-description">
-                                <strong>Office:</strong> ${issue.office}<br>
-                                <strong>Feedback:</strong> ${issue.issue.substring(0, 150)}...
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p style="color: #10b981;">✅ Generation quality is good overall.</p>';
-
-            document.getElementById('generationIssues').innerHTML = genHtml;
-
-            // 5. Edge Cases
-            const edgeCases = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const question = (row[`What question did you ask AskCI?${suffix}`] || '').toLowerCase();
-                    const comments = (row[`Optional - include any specific problems or suggestions to this response?${suffix}`] || '').toLowerCase();
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    
-                    const isComplexQuery = question.includes('married') || question.includes('children') || 
-                                          question.includes('cross') || question.includes('multiple') ||
-                                          question.includes('family') || question.includes('separated');
-                    
-                    if (isComplexQuery && accuracy && !accuracy.includes('Completely correct')) {
-                        edgeCases.push({
-                            office: row['Office Location'],
-                            question: row[`What question did you ask AskCI?${suffix}`],
-                            accuracy: accuracy,
-                            feedback: comments
-                        });
-                    }
-                }
-            });
-
-            const edgeHtml = edgeCases.length > 0 ? `
-                <p><strong>Pattern Detected:</strong> ${edgeCases.length} complex, multi-factor queries performed poorly.</p>
-                <div class="recommendation">
-                    <strong>RAG Recommendation:</strong> Implement specialized handling for complex queries:
-                    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
-                        <li>Add query classification to detect complex/multi-part questions</li>
-                        <li>Increase retrieved chunks (top-k) for complex queries</li>
-                        <li>Implement query decomposition to break complex questions into sub-queries</li>
-                        <li>Add specific content to CMS about common complex scenarios</li>
-                        <li>Consider implementing a "confidence score" to trigger human handoff</li>
-                        <li>Create decision trees for multi-factor eligibility questions</li>
-                    </ul>
-                </div>
-                <div class="question-list">
-                    ${edgeCases.slice(0, 5).map(edge => `
-                        <div class="question-item" style="border-left: 3px solid #f59e0b;">
-                            <div class="question-text">⚠️ ${edge.question}</div>
-                            <div class="question-meta">
-                                <span class="badge badge-yellow">${edge.accuracy}</span>
-                                📍 ${edge.office}
-                            </div>
-                            ${edge.feedback ? `<div class="question-feedback">${edge.feedback.substring(0, 200)}...</div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p style="color: #10b981;">✅ Complex queries handled appropriately.</p>';
-
-            document.getElementById('edgeCases').innerHTML = edgeHtml;
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('expanded');
         }
 
-        function generateProblemAreas() {
-            // Critical Issues
-            const critical = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    
-                    if (accuracy && accuracy.includes('Completely incorrect') && question) {
-                        critical.push({
-                            office: row['Office Location'],
-                            question: question,
-                            comments: row[`Optional - include any specific problems or suggestions to this response?${suffix}`]
-                        });
-                    }
+        function filterByAccuracy(accuracy) {
+            // Update button states
+            document.querySelectorAll('.filter-group .filter-btn').forEach(btn => {
+                if (btn.textContent.includes('All') && accuracy === 'all') {
+                    btn.classList.add('active');
+                } else if (btn.onclick && btn.onclick.toString().includes(accuracy) && accuracy !== 'all') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
                 }
             });
-
-            const criticalHtml = critical.length > 0 ? `
-                <p style="color: #ef4444; font-weight: 600; margin-bottom: 16px;">
-                    ⚠️ ${critical.length} completely incorrect responses detected - requires immediate attention
-                </p>
-                ${critical.map(item => `
-                    <div class="question-item" style="border-left: 3px solid #ef4444;">
-                        <div class="question-text">❌ ${item.question}</div>
-                        <div class="question-meta">📍 ${item.office}</div>
-                        ${item.comments ? `<div class="question-feedback">${item.comments}</div>` : ''}
-                    </div>
-                `).join('')}
-            ` : '<p style="color: #10b981;">✅ No critically incorrect responses detected.</p>';
-
-            document.getElementById('criticalIssues').innerHTML = criticalHtml;
-
-            // Failed Questions
-            displayFailedQuestions('all');
-
-            // Clarification Needed
-            const clarification = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    
-                    if (helpfulness && helpfulness.includes('Somewhat') && question) {
-                        clarification.push({
-                            office: row['Office Location'],
-                            question: question,
-                            accuracy: row[`How accurate was the answer?${suffix}`],
-                            comments: row[`Optional - include any specific problems or suggestions to this response?${suffix}`]
-                        });
-                    }
-                }
-            });
-
-            const clarHtml = clarification.length > 0 ? `
-                <p style="margin-bottom: 16px;">${clarification.length} responses were marked as "needs clarification"</p>
-                ${clarification.map(item => `
-                    <div class="question-item" style="border-left: 3px solid #f59e0b;">
-                        <div class="question-text">⚠️ ${item.question}</div>
-                        <div class="question-meta">
-                            <span class="badge badge-yellow">${item.accuracy || 'N/A'}</span>
-                            📍 ${item.office}
-                        </div>
-                        ${item.comments ? `<div class="question-feedback">${item.comments}</div>` : ''}
-                    </div>
-                `).join('')}
-            ` : '<p style="color: #10b981;">✅ All responses were either clearly helpful or clearly not helpful.</p>';
-
-            document.getElementById('clarificationQuestions').innerHTML = clarHtml;
+            
+            if (accuracy === 'all') {
+                filteredQuestions = [...allQuestions];
+            } else {
+                filteredQuestions = allQuestions.filter(q => q.accuracy === accuracy);
+            }
+            
+            displayQuestions();
         }
 
-        function displayFailedQuestions(filter = 'all') {
-            const failed = [];
-            testData.forEach(row => {
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    
-                    if (!question) continue;
-
-                    let include = false;
-                    if (filter === 'all' && accuracy && (accuracy.includes('incorrect') || accuracy.includes('Partially'))) {
-                        include = true;
-                    } else if (filter === 'incorrect' && accuracy && accuracy.includes('Completely incorrect')) {
-                        include = true;
-                    } else if (filter === 'partial' && accuracy && accuracy.includes('Partially correct')) {
-                        include = true;
-                    }
-
-                    if (include) {
-                        failed.push({
-                            office: row['Office Location'],
-                            question: question,
-                            accuracy: accuracy,
-                            helpfulness: row[`Would this answer help a citizen?${suffix}`],
-                            comments: row[`Optional - include any specific problems or suggestions to this response?${suffix}`]
-                        });
-                    }
-                }
-            });
-
-            const html = failed.length > 0 ? failed.map(item => {
-                const color = item.accuracy.includes('Completely incorrect') ? '#ef4444' : '#f59e0b';
-                const badgeClass = item.accuracy.includes('Completely incorrect') ? 'badge-red' : 'badge-yellow';
-                
-                return `
-                    <div class="question-item" style="border-left: 3px solid ${color};">
-                        <div class="question-text">${item.question}</div>
-                        <div class="question-meta">
-                            <span class="badge ${badgeClass}">${item.accuracy}</span>
-                            <span class="badge badge-blue">${item.helpfulness}</span>
-                            📍 ${item.office}
-                        </div>
-                        ${item.comments ? `<div class="question-feedback">${item.comments}</div>` : ''}
-                    </div>
-                `;
-            }).join('') : '<p style="color: #6b7280; text-align: center;">No questions match this filter.</p>';
-
-            document.getElementById('failedQuestions').innerHTML = html;
-        }
-
-        function generateDetailedResults() {
-            let html = '';
-            testData.forEach(row => {
-                const office = row['Office Location'];
-                html += `
-                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #10b981;">
-                        <h3 style="margin: 0 0 16px 0; color: #111827;">📍 ${office}</h3>
-                `;
-
-                for (let i = 1; i <= 3; i++) {
-                    const suffix = i === 1 ? '' : i.toString();
-                    const question = row[`What question did you ask AskCI?${suffix}`];
-                    const accuracy = row[`How accurate was the answer?${suffix}`];
-                    const helpfulness = row[`Would this answer help a citizen?${suffix}`];
-                    const comments = row[`Optional - include any specific problems or suggestions to this response?${suffix}`];
-
-                    if (question && question.trim()) {
-                        const accuracyBadge = accuracy ? 
-                            (accuracy.includes('Completely correct') ? 'badge-green' : 
-                             accuracy.includes('Mostly correct') ? 'badge-blue' :
-                             accuracy.includes('Partially correct') ? 'badge-yellow' : 'badge-red') : '';
-                        
-                        html += `
-                            <div style="background: white; padding: 16px; border-radius: 6px; margin-bottom: 12px;">
-                                <div style="font-weight: 600; margin-bottom: 8px;">${question}</div>
-                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                    ${accuracy ? `<span class="badge ${accuracyBadge}">${accuracy}</span>` : ''}
-                                    ${helpfulness ? `<span class="badge badge-blue">${helpfulness}</span>` : ''}
-                                </div>
-                                ${comments ? `<div style="font-size: 0.875rem; color: #6b7280; font-style: italic; margin-top: 8px;">${comments}</div>` : ''}
-                            </div>
-                        `;
-                    }
-                }
-
-                html += `</div>`;
-            });
-
-            document.getElementById('detailedResultsContent').innerHTML = html;
-
-            // Overall Feedback
-            let feedbackHtml = '';
-            testData.forEach(row => {
-                const feedback = row['Please share your overall feedback on AskCI'];
-                if (feedback && feedback.trim()) {
-                    feedbackHtml += `
-                        <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #10b981;">
-                            <div style="font-weight: 600; color: #10b981; margin-bottom: 8px;">📍 ${row['Office Location']}</div>
-                            <div style="color: #374151;">${feedback}</div>
-                        </div>
-                    `;
-                }
-            });
-
-            document.getElementById('overallFeedback').innerHTML = feedbackHtml || '<p style="color: #6b7280;">No overall feedback provided.</p>';
-        }
-
-        function generateRecommendations() {
-            // Immediate Actions
-            const immediateHtml = `
-                <ul class="action-list">
-                    <li>
-                        <strong>Review Completely Incorrect Responses:</strong> 
-                        Investigate all questions that received completely incorrect answers. Update CMS content and verify knowledge base refresh.
-                    </li>
-                    <li>
-                        <strong>Fix Means Testing Information:</strong> 
-                        Multiple users reported incorrect or incomplete means testing information. Audit and update all means test content.
-                    </li>
-                    <li>
-                        <strong>Update Cross-Border Content:</strong> 
-                        System failed on cross-border queries. Add comprehensive content about ROI/NI scenarios.
-                    </li>
-                    <li>
-                        <strong>Verify Link Accuracy:</strong> 
-                        Review all internal links in responses. Ensure they point to current, relevant pages.
-                    </li>
-                    <li>
-                        <strong>Add Opening Hours Data:</strong> 
-                        One tester reported the system couldn't provide office opening hours. Add this structured data if possible.
-                    </li>
-                </ul>
-            `;
-            document.getElementById('immediateActions').innerHTML = immediateHtml;
-
-            // RAG Tuning
-            const ragTuningHtml = `
-                <h3>🔍 Retrieval Layer</h3>
-                <ul class="action-list">
-                    <li><strong>Increase top-k:</strong> Retrieve more chunks (try 7-10 instead of 3-5) for complex queries</li>
-                    <li><strong>Implement hybrid search:</strong> Combine semantic search with keyword matching for better recall</li>
-                    <li><strong>Add reranking:</strong> Use a cross-encoder model to rerank retrieved chunks</li>
-                    <li><strong>Tune similarity threshold:</strong> Adjust minimum similarity scores to balance precision/recall</li>
-                </ul>
-
-                <h3>✂️ Chunking Strategy</h3>
-                <ul class="action-list">
-                    <li><strong>Increase chunk size:</strong> Try 750-1000 tokens to capture more complete context</li>
-                    <li><strong>Increase overlap:</strong> Use 150-200 token overlap to prevent information loss</li>
-                    <li><strong>Semantic chunking:</strong> Split on section boundaries rather than fixed token counts</li>
-                    <li><strong>Metadata enrichment:</strong> Add page title, section headers as metadata for better filtering</li>
-                </ul>
-
-                <h3>🤖 Generation Layer</h3>
-                <ul class="action-list">
-                    <li><strong>Update system prompt:</strong> Emphasize direct, clear answers and avoiding "waffling"</li>
-                    <li><strong>Add response templates:</strong> Structure answers consistently (eligibility → process → links)</li>
-                    <li><strong>Lower temperature:</strong> Try 0.3-0.5 for more focused, deterministic outputs</li>
-                    <li><strong>Add confidence scoring:</strong> Indicate when system is uncertain and suggest human contact</li>
-                </ul>
-
-                <h3>📊 Monitoring & Evaluation</h3>
-                <ul class="action-list">
-                    <li><strong>Log all queries:</strong> Track what users ask to identify patterns and gaps</li>
-                    <li><strong>Add feedback mechanism:</strong> Let users rate responses (👍/👎)</li>
-                    <li><strong>Create test suite:</strong> Build automated tests from these failed questions</li>
-                    <li><strong>Regular audits:</strong> Review a sample of responses weekly</li>
-                </ul>
-            `;
-            document.getElementById('ragTuning').innerHTML = ragTuningHtml;
-
-            // Content Improvements
-            const contentHtml = `
-                <ul class="action-list">
-                    <li>
-                        <strong>Means Testing Pages:</strong> 
-                        Add explicit sections on savings thresholds, assessment methods, and disregards for all schemes.
-                    </li>
-                    <li>
-                        <strong>Complex Scenarios:</strong> 
-                        Create dedicated pages for common complex situations (separated couples, cross-border workers, multiple children with special needs).
-                    </li>
-                    <li>
-                        <strong>Scheme Names:</strong> 
-                        Ensure all current scheme names are used. Flag outdated names (e.g., "Green Card Permit" → "Critical Skills Employment Permit").
-                    </li>
-                    <li>
-                        <strong>Edge Cases & Exceptions:</strong> 
-                        Add sections explicitly covering exceptions, special circumstances, and non-standard situations.
-                    </li>
-                    <li>
-                        <strong>Structured Data:</strong> 
-                        Consider adding structured data (JSON-LD) for office hours, locations, and frequently updated information.
-                    </li>
-                    <li>
-                        <strong>Decision Trees:</strong> 
-                        For complex eligibility, create visual decision trees or step-by-step wizards in CMS.
-                    </li>
-                </ul>
-            `;
-            document.getElementById('contentImprovements').innerHTML = contentHtml;
-
-            // Testing Strategy
-            const testingHtml = `
-                <ul class="action-list">
-                    <li>
-                        <strong>Create Regression Test Suite:</strong> 
-                        Convert all "completely incorrect" questions into automated tests. Re-run after each system change.
-                    </li>
-                    <li>
-                        <strong>Implement Continuous Evaluation:</strong> 
-                        Set up automated evaluation on a test set of questions with known correct answers.
-                    </li>
-                    <li>
-                        <strong>A/B Testing:</strong> 
-                        Test RAG parameter changes (chunk size, top-k, etc.) on sample queries before deploying.
-                    </li>
-                    <li>
-                        <strong>User Feedback Loop:</strong> 
-                        Add thumbs up/down to responses. Review poorly rated responses weekly.
-                    </li>
-                    <li>
-                        <strong>Quarterly Reviews:</strong> 
-                        Repeat this testing process quarterly with Information Officers to track improvement.
-                    </li>
-                    <li>
-                        <strong>Edge Case Library:</strong> 
-                        Maintain a growing library of edge cases and complex queries to test against.
-                    </li>
-                </ul>
-            `;
-            document.getElementById('testingStrategy').innerHTML = testingHtml;
-        }
-
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function filterFailed(type) {
-            document.querySelectorAll('.filters .filter-btn').forEach(btn => {
+        function filterByHelpfulness(helpfulness) {
+            // Update button states
+            event.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-            displayFailedQuestions(type);
+            
+            if (helpfulness === 'all') {
+                filteredQuestions = [...allQuestions];
+            } else {
+                filteredQuestions = allQuestions.filter(q => q.helpfulness === helpfulness);
+            }
+            
+            displayQuestions();
         }
+
+        function filterByOffice() {
+            const office = document.getElementById('officeFilter').value;
+            
+            if (office === 'all') {
+                filteredQuestions = [...allQuestions];
+            } else {
+                filteredQuestions = allQuestions.filter(q => q.officeLocation === office);
+            }
+            
+            displayQuestions();
+        }
+
+        // Initialize
+        parseCSV();
+        calculateStats();
+        displayQuestions();
+        displaySuccessFailureComparison();
+        displayOverallFeedback();
     </script>
 </body>
 </html>
