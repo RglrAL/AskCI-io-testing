@@ -452,7 +452,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Citizens Information: AskCI Information Officers Testing Analysis</h1>
+            <h1>🤖 AskCI Testing Analysis</h1>
             <p>Information Officers Feedback - Field Testing Results</p>
         </div>
 
@@ -686,34 +686,60 @@ I would not like to be overly reliant on AI as it does miss things on occasion.
         let filteredQuestions = [];
 
         function parseCSV() {
-            const lines = csvData.split('\n');
-            const headers = lines[0].split(',');
+            // Better CSV parsing that handles multi-line fields properly
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
             
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                if (!line.trim()) continue;
+            for (let i = 0; i < csvData.length; i++) {
+                const char = csvData[i];
+                const nextChar = csvData[i + 1];
                 
-                // Parse CSV line handling quoted fields with newlines
-                const values = [];
-                let current = '';
-                let inQuotes = false;
-                
-                for (let j = 0; j < line.length; j++) {
-                    const char = line[j];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        values.push(current.trim());
-                        current = '';
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Escaped quote
+                        currentField += '"';
+                        i++; // Skip next quote
                     } else {
-                        current += char;
+                        // Toggle quote state
+                        inQuotes = !inQuotes;
                     }
+                } else if (char === ',' && !inQuotes) {
+                    // End of field
+                    currentRow.push(currentField);
+                    currentField = '';
+                } else if (char === '\n' && !inQuotes) {
+                    // End of row
+                    currentRow.push(currentField);
+                    if (currentRow.length > 1) { // Skip empty rows
+                        rows.push(currentRow);
+                    }
+                    currentRow = [];
+                    currentField = '';
+                } else if (char === '\r') {
+                    // Skip carriage returns
+                    continue;
+                } else {
+                    currentField += char;
                 }
-                values.push(current.trim());
-                
+            }
+            
+            // Push last row if exists
+            if (currentRow.length > 0 || currentField) {
+                currentRow.push(currentField);
+                rows.push(currentRow);
+            }
+            
+            // Parse headers
+            const headers = rows[0].map(h => h.trim());
+            
+            // Parse data rows
+            for (let i = 1; i < rows.length; i++) {
+                const values = rows[i];
                 const row = {};
                 headers.forEach((header, idx) => {
-                    row[header.trim()] = values[idx] || '';
+                    row[header] = values[idx] ? values[idx].trim() : '';
                 });
                 
                 // Extract three question sets per respondent
@@ -724,7 +750,7 @@ I would not like to be overly reliant on AI as it does miss things on occasion.
                     const helpfulness = row[`Would this answer help a citizen?${suffix}`];
                     const feedback = row[`Optional - include any specific problems or suggestions to this response?${suffix}`];
                     
-                    if (question && question.trim() && accuracy) {
+                    if (question && question.trim() && accuracy && accuracy.trim()) {
                         allQuestions.push({
                             id: `${row.ID}-${q}`,
                             officeLocation: row['Office Location'],
